@@ -7,8 +7,13 @@ export async function getFileContent(path: string) {
   const branch = process.env.GITHUB_BRANCH || 'main'
 
   try {
-    const session = await auth()
-    const token = session?.user?.accessToken
+    // 尝试获取会话，但如果失败（如在静态渲染时）不会导致错误
+    let token: string | undefined
+    try {
+      const session = await auth()
+      token = session?.user?.accessToken
+    } catch (error) {
+    }
 
     let apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${path}?ref=${branch}`
 
