@@ -20,7 +20,6 @@ interface NavigationCardProps {
 export async function NavigationCard({ item, siteConfig }: NavigationCardProps) {
   const isExternalIcon = item.icon?.startsWith('http')
   const isLocalIcon = item.icon && !isExternalIcon
-  console.log(item.icon)
   // iconPath /assets/favicon_1765155876917.ico
   const iconPath = isLocalIcon && item.icon    
       ?  await getFileContent(`public${item.icon.startsWith('/') ? item.icon : `/${item.icon}`}`)      

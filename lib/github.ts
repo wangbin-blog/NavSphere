@@ -3,6 +3,7 @@ import { auth } from '@/lib/auth'
 export async function getFileContent(path: string) {
   const owner = process.env.GITHUB_OWNER!
   const repo = process.env.GITHUB_REPO!
+  const url_proxy = process.env.URL_PROXY!
   const branch = process.env.GITHUB_BRANCH || 'main'
 
   try {
@@ -12,7 +13,7 @@ export async function getFileContent(path: string) {
     let apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${path}?ref=${branch}`
 
     if(!token){
-      apiUrl=`https://tvv.tw/https://github.com/${owner}/${repo}/blob/${branch}/${path}`
+      apiUrl=`${url_proxy}/https://github.com/${owner}/${repo}/blob/${branch}/${path}`
     }
 
     const response = await fetch(apiUrl, {
