@@ -3,23 +3,13 @@ import { auth } from '@/lib/auth'
 export async function getFileContent(path: string) {
   const owner = process.env.GITHUB_OWNER!
   const repo = process.env.GITHUB_REPO!
-  const url_proxy = process.env.URL_PROXY!
   const branch = process.env.GITHUB_BRANCH || 'main'
 
   try {
-    // 尝试获取会话，但如果失败（如在静态渲染时）不会导致错误
-    let token: string | undefined
-    try {
-      const session = await auth()
-      token = session?.user?.accessToken
-    } catch (error) {
-    }
+    const session = await auth()
+    const token = session?.user?.accessToken
 
     let apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${path}?ref=${branch}`
-
-    if(!token){
-      apiUrl=`${url_proxy}/https://github.com/${owner}/${repo}/blob/${branch}/${path}`
-    }
 
     const response = await fetch(apiUrl, {
       headers: {
@@ -45,7 +35,7 @@ export async function getFileContent(path: string) {
     if (path.match(/\.(jpg|jpeg|png|gif|ico|svg)$/i)) {
       return apiUrl
     }
-    
+
     const data = await response.json()
     return data
   } catch (error) {
@@ -127,4 +117,40 @@ export async function commitFile(
       await delay(1000 * attempt)
     }
   }
-} 
+}
+
+
+export async function getNavigationData(path: string) {
+  const owner = process.env.GITHUB_OWNER!
+  const repo = process.env.GITHUB_REPO!
+  const url_proxy = process.env.URL_PROXY!
+  const branch = process.env.GITHUB_BRANCH || 'main'
+
+  const apiUrl = `${url_proxy}/https://github.com/${owner}/${repo}/blob/${branch}/${path}`
+  const response = await fetch(apiUrl, {
+    headers: {
+      Accept: 'application/vnd.github.v3.raw',
+      'User-Agent': 'NavSphere',
+    },
+  })
+
+  if (response.status === 404) {
+    console.log(`File not found: ${path}, returning default data`)
+    if (path.includes('navigation.json')) {
+      return { navigationItems: [] }
+    }
+    return {}
+  }
+
+  if (!response.ok) {
+    throw new Error(`GitHub API error: ${response.statusText}`)
+  }
+
+  // 对于图片文件，我们需要特殊处理
+  if (path.match(/\.(jpg|jpeg|png|gif|ico|svg)$/i)) {
+    return apiUrl
+  }
+
+  const data = await response.json()
+  return data
+}

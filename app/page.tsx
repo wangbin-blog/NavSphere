@@ -3,14 +3,14 @@ import { Metadata } from 'next/types'
 import { ScrollToTop } from '@/components/ScrollToTop'
 import { Container } from '@/components/ui/container'
 import type { SiteConfig } from '@/types/site'
-import { getFileContent } from '@/lib/github'
+import { getNavigationData } from '@/lib/github'
 
 async function getData() {
    // 直接从GitHub获取数据
-    const navigationData = await getFileContent('navsphere/content/navigation.json')
+    const navigationData = await getNavigationData('navsphere/content/navigation.json')
     
     // 加载站点配置
-    const siteDataRaw = await getFileContent('navsphere/content/site.json')
+    const siteDataRaw = await getNavigationData('navsphere/content/site.json')
   // 确保 theme 类型正确
   const siteData: SiteConfig = {
     ...siteDataRaw,
