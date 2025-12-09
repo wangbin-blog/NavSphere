@@ -9,7 +9,12 @@ export async function getFileContent(path: string) {
     const session = await auth()
     const token = session?.user?.accessToken
 
-    const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${path}?ref=${branch}`
+    let apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${path}?ref=${branch}`
+
+    if(!token){
+      apiUrl=`https://tvv.tw/https://github.com/${owner}/${repo}/blob/${branch}/${path}`
+    }
+
     const response = await fetch(apiUrl, {
       headers: {
         Accept: 'application/vnd.github.v3.raw',
@@ -30,6 +35,11 @@ export async function getFileContent(path: string) {
       throw new Error(`GitHub API error: ${response.statusText}`)
     }
 
+    // 对于图片文件，我们需要特殊处理
+    if (path.match(/\.(jpg|jpeg|png|gif|ico|svg)$/i)) {
+      return apiUrl
+    }
+    
     const data = await response.json()
     return data
   } catch (error) {

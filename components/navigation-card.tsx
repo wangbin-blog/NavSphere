@@ -10,20 +10,20 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { getFileContent } from '@/lib/github'
 
 interface NavigationCardProps {
   item: NavigationSubItem
   siteConfig?: SiteConfig
 }
 
-export function NavigationCard({ item, siteConfig }: NavigationCardProps) {
+export async function NavigationCard({ item, siteConfig }: NavigationCardProps) {
   const isExternalIcon = item.icon?.startsWith('http')
   const isLocalIcon = item.icon && !isExternalIcon
-
-  const iconPath = isLocalIcon && item.icon
-    ? item.icon.startsWith('/') 
-      ? item.icon 
-      : `/${item.icon}`
+  console.log(item.icon)
+  // iconPath /assets/favicon_1765155876917.ico
+  const iconPath = isLocalIcon && item.icon    
+      ?  await getFileContent(`public${item.icon.startsWith('/') ? item.icon : `/${item.icon}`}`)      
     : item.icon || '/placeholder-icon.png'
 
   // 获取链接打开方式，默认为新窗口
@@ -45,7 +45,7 @@ export function NavigationCard({ item, siteConfig }: NavigationCardProps) {
                   {item.icon && (
                     <div className="flex-shrink-0 w-8 h-8 sm:w-11 sm:h-11">
                       <img
-                        src={item.icon}
+                        src={iconPath}
                         alt={`${item.title} icon`}
                         className="w-full h-full object-contain"
                       />

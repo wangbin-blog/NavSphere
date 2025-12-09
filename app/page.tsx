@@ -3,10 +3,14 @@ import { Metadata } from 'next/types'
 import { ScrollToTop } from '@/components/ScrollToTop'
 import { Container } from '@/components/ui/container'
 import type { SiteConfig } from '@/types/site'
-import navigationData from '@/navsphere/content/navigation.json'
-import siteDataRaw from '@/navsphere/content/site.json'
+import { getFileContent } from '@/lib/github'
 
-function getData() {
+async function getData() {
+   // 直接从GitHub获取数据
+    const navigationData = await getFileContent('navsphere/content/navigation.json')
+    
+    // 加载站点配置
+    const siteDataRaw = await getFileContent('navsphere/content/site.json')
   // 确保 theme 类型正确
   const siteData: SiteConfig = {
     ...siteDataRaw,
@@ -29,8 +33,8 @@ function getData() {
   // 过滤只显示启用的分类和网站
   const filteredNavigationData = {
     navigationItems: navigationData.navigationItems
-      .filter(category => (category as any).enabled !== false) // 过滤启用的分类
-      .map(category => {
+      .filter((category: any) => (category as any).enabled !== false) // 过滤启用的分类
+      .map((category: { subCategories: any[]; items: any[] }) => {
         const filteredSubCategories = category.subCategories
           ? (category.subCategories as any[])
               .filter(sub => sub.enabled !== false) // 过滤启用的子分类
@@ -68,8 +72,8 @@ function getData() {
   }
 }
 
-export function generateMetadata(): Metadata {
-  const { siteData } = getData()
+export async function generateMetadata(): Promise<Metadata> {
+  const { siteData } =await getData()
 
   return {
     title: siteData.basic.title,
@@ -81,8 +85,8 @@ export function generateMetadata(): Metadata {
   }
 }
 
-export default function HomePage() {
-  const { navigationData, siteData } = getData()
+export default async function HomePage() {
+  const { navigationData, siteData } =await getData()
 
   return (
     <Container>
