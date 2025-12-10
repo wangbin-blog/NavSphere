@@ -46,7 +46,6 @@ export async function getFileContent(path: string) {
     return {}
   }
 }
-
 export async function commitFile(
   path: string,
   content: string,
@@ -118,14 +117,12 @@ export async function commitFile(
     }
   }
 }
-
-
 export async function getNavigationData(path: string) {
-  const owner = process.env.GITHUB_OWNER!
-  const repo = process.env.GITHUB_REPO!
-  const url_proxy = process.env.URL_PROXY!
-  const branch = process.env.GITHUB_BRANCH || 'main'
-
+  // 确保这些环境变量只在服务器端使用
+  const owner = process.env.GITHUB_OWNER 
+  const repo = process.env.GITHUB_REPO
+  const url_proxy = process.env.URL_PROXY 
+  const branch = process.env.GITHUB_BRANCH 
   const apiUrl = `${url_proxy}/https://github.com/${owner}/${repo}/blob/${branch}/${path}`
   const response = await fetch(apiUrl, {
     headers: {
@@ -145,12 +142,6 @@ export async function getNavigationData(path: string) {
   if (!response.ok) {
     throw new Error(`GitHub API error: ${response.statusText}`)
   }
-
-  // 对于图片文件，我们需要特殊处理
-  if (path.match(/\.(jpg|jpeg|png|gif|ico|svg)$/i)) {
-    return apiUrl
-  }
-
   const data = await response.json()
   return data
 }

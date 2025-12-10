@@ -3,14 +3,15 @@ import { Metadata } from 'next/types'
 import { ScrollToTop } from '@/components/ScrollToTop'
 import { Container } from '@/components/ui/container'
 import type { SiteConfig } from '@/types/site'
-import { getNavigationData } from '@/lib/github'
 
 async function getData() {
-   // 直接从GitHub获取数据
-    const navigationData = await getNavigationData('navsphere/content/navigation.json')
-    
-    // 加载站点配置
-    const siteDataRaw = await getNavigationData('navsphere/content/site.json')
+  var baseUrl= process.env.NEXT_PUBLIC_API_URL
+  const response = await fetch(`${baseUrl}/api/home/navigation`)
+  const navigationData = await response.json()
+
+  // 加载站点配置
+  const siteDataRawRes =await fetch(`${baseUrl}/api/home/site`)// await getNavigationData('navsphere/content/site.json')
+  const siteDataRaw = await siteDataRawRes.json()
   // 确保 theme 类型正确
   const siteData: SiteConfig = {
     ...siteDataRaw,
@@ -37,13 +38,13 @@ async function getData() {
       .map((category: { subCategories: any[]; items: any[] }) => {
         const filteredSubCategories = category.subCategories
           ? (category.subCategories as any[])
-              .filter(sub => sub.enabled !== false) // 过滤启用的子分类
-              .map(sub => ({
-                ...sub,
-                items: sub.items?.filter((item: any) => item.enabled !== false) // 过滤启用的网站
-              }))
+            .filter(sub => sub.enabled !== false) // 过滤启用的子分类
+            .map(sub => ({
+              ...sub,
+              items: sub.items?.filter((item: any) => item.enabled !== false) // 过滤启用的网站
+            }))
           : undefined
-        
+
         return {
           ...category,
           items: category.items?.filter(item => item.enabled !== false), // 过滤启用的网站
@@ -73,7 +74,7 @@ async function getData() {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-  const { siteData } =await getData()
+  const { siteData } = await getData()
 
   return {
     title: siteData.basic.title,
@@ -86,7 +87,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function HomePage() {
-  const { navigationData, siteData } =await getData()
+  const { navigationData, siteData } = await getData()
 
   return (
     <Container>

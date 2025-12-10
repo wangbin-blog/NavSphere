@@ -22,7 +22,7 @@ export async function NavigationCard({ item, siteConfig }: NavigationCardProps) 
   const isLocalIcon = item.icon && !isExternalIcon
   // iconPath /assets/favicon_1765155876917.ico
   const iconPath = isLocalIcon && item.icon    
-      ?  await getNavigationData(`public${item.icon.startsWith('/') ? item.icon : `/${item.icon}`}`)      
+      ?  item.icon //await getNavigationData(`public${item.icon.startsWith('/') ? item.icon : `/${item.icon}`}`)      
     : item.icon || '/placeholder-icon.png'
 
   // 获取链接打开方式，默认为新窗口
