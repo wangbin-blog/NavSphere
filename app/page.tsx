@@ -8,7 +8,7 @@ async function getData() {
   var baseUrl= process.env.NEXT_PUBLIC_API_URL
   const response = await fetch(`${baseUrl}/api/home/navigation`)
   const navigationData = await response.json()
-
+  console.log('navigationData:', navigationData)
   // 加载站点配置
   const siteDataRawRes =await fetch(`${baseUrl}/api/home/site`)// await getNavigationData('navsphere/content/site.json')
   const siteDataRaw = await siteDataRawRes.json()
