@@ -6,11 +6,10 @@ import type { SiteConfig } from '@/types/site'
 
 async function getData() {
   var baseUrl= process.env.NEXT_PUBLIC_API_URL
-  const response = await fetch(`${baseUrl}/api/home/navigation`)
+  const response = await fetch(`${baseUrl}/api/home/navigation`, { cache: 'no-store' })
   const navigationData = await response.json()
-  console.log('navigationData:', navigationData)
   // 加载站点配置
-  const siteDataRawRes =await fetch(`${baseUrl}/api/home/site`)// await getNavigationData('navsphere/content/site.json')
+  const siteDataRawRes =await fetch(`${baseUrl}/api/home/site`, { cache: 'no-store' })
   const siteDataRaw = await siteDataRawRes.json()
   // 确保 theme 类型正确
   const siteData: SiteConfig = {
