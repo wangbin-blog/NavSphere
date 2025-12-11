@@ -11,7 +11,6 @@ export async function GET() {
 
     return NextResponse.json(navigationData, {
       headers: {
-        'Cache-Control': 's-maxage=3600, stale-while-revalidate',
         'Content-Type': 'application/json'
       }
     })
